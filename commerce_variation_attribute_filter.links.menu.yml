@@ -1,0 +1,5 @@
+commerce_variation_attribute_filter.admin_settings:
+  route_name: commerce_variation_attribute_filter.admin_settings
+  title: 'Variation attribute filter'
+  description: 'Filter variation attributes with specified values.'
+  parent: commerce.configuration
