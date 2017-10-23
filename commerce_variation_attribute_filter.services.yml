@@ -1,5 +1,0 @@
-services:
-  commerce_variation_attribute_filter_subscriber:
-    class: '\Drupal\commerce_variation_attribute_filter\EventSubscriber\CommerceVariationAttributeFilterSubscriber'
-    tags:
-      - { name: 'event_subscriber' }

@@ -1,7 +1,0 @@
-commerce_variation_attribute_filter.admin_settings:
-  path: /admin/commerce/config/variation-attribute-filter
-  defaults:
-    _title: 'Variation Attribute Filter'
-    _form: \Drupal\commerce_variation_attribute_filter\Form\SettingsForm
-  requirements:
-    _permission: 'administer commerce variation attribute filter'

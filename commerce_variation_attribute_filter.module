@@ -1,0 +1,41 @@
+<?php
+
+use Drupal\commerce_variation_attribute_filter\ProductVariationFilter;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_alter().
+ */
+function commerce_variation_attribute_filter_form_commerce_order_item_add_to_cart_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id)
+{
+  $form['#process'][] = 'commerce_variation_attribute_filter_process';
+}
+
+/**
+ * Process callback: assigns weights and hides extra fields.
+ *
+ * @see \Drupal\Core\Entity\EntityForm::form()
+ */
+function commerce_variation_attribute_filter_process($element, FormStateInterface $form_state, $form) {
+  return $element;
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function commerce_variation_attribute_filter_field_widget_form_alter(&$element, \Drupal\Core\Form\FormStateInterface $form_state, $context) {
+
+  /** @var \Drupal\Core\Field\FieldItemListInterface $field_items */
+  $field_items = $context['items'];
+  $entity_type_id = $field_items->getEntity()->getEntityTypeId();
+  $field_definition = $field_items->getFieldDefinition();
+  $type = $field_definition->getType();
+  if (isset($element['variation']) && $entity_type_id == 'commerce_order_item' && $type == 'entity_reference') {
+    $variation_id = $element['variation']['#value'];
+    $storage = \Drupal::entityTypeManager()->getStorage('commerce_product_variation');
+    /** @var \Drupal\commerce_product\Entity\ProductVariationInterface $variation */
+    $variation = $storage->load($variation_id);
+    $variationFilter = new ProductVariationFilter($variation->getProduct());
+    $variationFilter->filterAttributes($element['attributes']);
+  }
+}
