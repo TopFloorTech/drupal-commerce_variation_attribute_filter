@@ -14,15 +14,17 @@ class ProductVariationFilter {
     $this->product = $product;
   }
 
-  public function getValidVariations(array $attributes) {
+  public function getValidVariations(array $attributes = NULL) {
     $variations = $this->product->getVariations();
 
-    foreach ($attributes as $attr_id => $field) {
-      if (substr($attr_id, 0, 10) == 'attribute_') {
-        if (!empty($field['#default_value'])) {
-          foreach ($variations as $variationId => $variation) {
-            if (!$this->variationHasValue($variation, $attr_id, $field['#default_value'])) {
-              unset($variations[$variationId]);
+    if (!is_null($attributes)) {
+      foreach ($attributes as $attr_id => $field) {
+        if (substr($attr_id, 0, 10) == 'attribute_') {
+          if (!empty($field['#default_value'])) {
+            foreach ($variations as $variationId => $variation) {
+              if (!$this->variationHasValue($variation, $attr_id, $field['#default_value'])) {
+                unset($variations[$variationId]);
+              }
             }
           }
         }
@@ -33,16 +35,18 @@ class ProductVariationFilter {
     return $variations;
   }
 
-  public function filterAttributes(array &$attributes) {
-    foreach ($attributes as $attr_id => $field) {
-      if (substr($attr_id, 0, 10) == 'attribute_' && isset($field['#options'])) {
-        $attr_copy = $attributes;
-        unset($attr_copy[$attr_id]);
-        $variations = $this->getValidVariations($attr_copy);
-        $attributes[$attr_id]['#options'] = $this->filterAttributeOptions($variations, $attr_id, $field['#options']);
+  public function filterAttributes(array &$attributes = NULL) {
+    if (!is_null($attributes)) {
+      foreach ($attributes as $attr_id => $field) {
+        if (substr($attr_id, 0, 10) == 'attribute_' && isset($field['#options'])) {
+          $attr_copy = $attributes;
+          unset($attr_copy[$attr_id]);
+          $variations = $this->getValidVariations($attr_copy);
+          $attributes[$attr_id]['#options'] = $this->filterAttributeOptions($variations, $attr_id, $field['#options']);
 
-        if (!empty($field['#default_value']) && !array_key_exists($field['#default_value'], $field['#options'])) {
-          $attributes[$attr_id]['#default_value'] = NULL;
+          if (!empty($field['#default_value']) && !array_key_exists($field['#default_value'], $field['#options'])) {
+            $attributes[$attr_id]['#default_value'] = NULL;
+          }
         }
       }
     }
